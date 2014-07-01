@@ -1,0 +1,11 @@
+# Python artifacts
+*.pyc
+*.egg-info
+__pycache__
+
+# IDE
+*.iml
+.idea
+
+# Example output
+example/output/
