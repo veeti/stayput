@@ -29,11 +29,10 @@ def filesystem_scanner(site, *args, **kwargs):
     """
     from stayput.items import Node
     all = []
-    items_path = os.path.join(site.root_path, 'items')
-    for directory, dirnames, filenames in os.walk(items_path):
+    for directory, dirnames, filenames in os.walk(site.items_path):
         for filename in filenames:
             full = os.path.join(directory, filename)
-            relative = os.path.relpath(full, items_path)
+            relative = os.path.relpath(full, site.items_path)
             normalized = relative.replace(os.path.pathsep, '/')
             all.append(Node(normalized, content_provider=create_filesystem_provider(full)))
     return all

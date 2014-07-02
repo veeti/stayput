@@ -31,7 +31,7 @@ def main():
         route = site.router(item)
         baseroute = os.path.dirname(route)
         content = site.templater.template(item)
-        os.makedirs(os.path.join(site.root_path, 'output', baseroute), exist_ok=True)
-        with open(os.path.join(site.root_path, 'output', route), 'w') as f:
+        os.makedirs(os.path.join(site.output_path, baseroute), exist_ok=True)
+        with open(os.path.join(site.output_path, route), 'w') as f:
             f.write(content)
         print("Compiled %s." % key)

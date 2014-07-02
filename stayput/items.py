@@ -1,9 +1,15 @@
+from os import path
+
 from stayput import scanners
 
 class Site(object):
 
     def __init__(self, root_path, scanner=scanners.filesystem_scanner):
         self.root_path = root_path
+        self.items_path = path.join(root_path, 'items/')
+        self.templates_path = path.join(root_path, 'templates/')
+        self.output_path = path.join(root_path, 'output/')
+
         self.scanner = scanner
         self.items = {}
         self.templater = None
