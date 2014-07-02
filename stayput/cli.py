@@ -7,6 +7,13 @@ from stayput import Site
 
 def main():
     cwd = os.path.abspath(os.getcwd())
+
+    # No configuration, no site to build.
+    if not os.path.exists(os.path.join(cwd, 'stayput.py')):
+        print("Error: stayput.py not found.")
+        sys.exit(1)
+
+    # Create site object and scan for items
     site = Site(root_path=cwd)
     site.scan()
 
