@@ -15,7 +15,9 @@ class TestSimpleRouter(unittest.TestCase):
         self.assertEqual('test/index.html', simple_router(self._make_item('test.html')))
 
     def test_subdirectories(self):
-        self.assertEqual('posts/hello-world/index.html', simple_router(self._make_item('posts/hello-world.html')))
+        self.assertEqual('posts/hello-world/index.html',
+                         simple_router(self._make_item('posts/hello-world.html')))
 
     def test_extension(self):
-        self.assertEqual('posts/hello-world/index.xml', simple_router(self._make_item('posts/hello-world.xml')))
+        self.assertEqual('posts/hello-world/index.xml',
+                         simple_router(self._make_item('posts/hello-world.xml')))

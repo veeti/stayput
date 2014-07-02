@@ -3,6 +3,7 @@ from unittest import mock
 
 from stayput.templaters import Templater, SimpleTemplater
 
+
 class TestTemplater(unittest.TestCase):
     """Test the base class for a templater."""
 

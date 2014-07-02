@@ -4,6 +4,7 @@ from importlib import machinery as imp
 
 from stayput import Site
 
+
 def main():
     cwd = os.path.abspath(os.getcwd())
     site = Site(root_path=cwd)

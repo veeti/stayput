@@ -1,5 +1,6 @@
 import os.path
 
+
 def simple_router(node, *args, **kwargs):
     if node.path == 'index.html':
         return node.path

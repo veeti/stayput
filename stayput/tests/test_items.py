@@ -2,6 +2,7 @@ import unittest
 
 from stayput.items import Site, Node
 
+
 def fake_scanner(*args, **kwargs):
     return [
         Node('a'),

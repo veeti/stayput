@@ -4,6 +4,7 @@ import os.path
 
 from stayput.scanners import create_filesystem_provider
 
+
 class TestFilesystemContentProvider(unittest.TestCase):
 
     def setUp(self):
