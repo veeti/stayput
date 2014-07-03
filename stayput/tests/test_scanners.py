@@ -1,6 +1,5 @@
 import unittest
 import tempfile
-import os.path
 
 from stayput.scanners import create_filesystem_provider
 
