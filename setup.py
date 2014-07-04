@@ -15,7 +15,7 @@ setup(
     packages=find_packages(),
     test_suite='stayput.tests',
 
-    requires=requires,
+    install_requires=requires,
     tests_require=test_requires,
 
     entry_points={
