@@ -38,6 +38,13 @@ class TestSite(unittest.TestCase):
         result = site.template_item(site.items['a'])
         self.assertEqual('Global abc', result)
 
+    def test_template_item_local_templater(self):
+        site = self._make()
+        site.items['a'].templater = self._make_templater('Local %contents%')
+        site.items['a'].content_provider = lambda *args, **kwargs: 'def'
+
+        result = site.template_item(site.items['a'])
+        self.assertEqual('Local def', result)
 
 class TestNode(unittest.TestCase):
 

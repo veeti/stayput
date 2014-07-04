@@ -20,18 +20,23 @@ class Site(object):
             self.items[item.path] = item
 
     def template_item(self, item):
-        return self.templater.template(item)
+        templater = self.templater
+        if item.templater:
+            templater = item.templater
+        return templater.template(item)
 
 
 class Node(object):
 
-    def __init__(self, path=None, content_provider=None):
+    def __init__(self, path=None, content_provider=None, templater=None):
         """
         :param path: The path to this node relative to the site
         :param content_provider: A function that when called returns the contents for the node
+        :param templater: A local templater to be used for this node
         """
         self.path = path
         self.content_provider = content_provider
+        self.templater = templater
         self._cached_contents = None
 
     @property
