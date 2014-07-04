@@ -30,7 +30,7 @@ def main():
     for key, item in site.items.items():
         route = site.router(item)
         baseroute = os.path.dirname(route)
-        content = site.templater.template(item)
+        content = site.template_item(item)
         os.makedirs(os.path.join(site.output_path, baseroute), exist_ok=True)
         with open(os.path.join(site.output_path, route), 'w') as f:
             f.write(content)

@@ -14,13 +14,29 @@ def fake_scanner(*args, **kwargs):
 class TestSite(unittest.TestCase):
 
     def _make(self):
-        return Site(root_path='', scanner=fake_scanner)
+        site = Site(root_path='', scanner=fake_scanner)
+        site.scan()
+        return site
+
+    def _make_templater(self, template='Test %contents%'):
+        from stayput.templaters import SimpleTemplater
+        templater = SimpleTemplater()
+        templater.set_default_template(template)
+        return templater
 
     def test_scan_items(self):
         site = self._make()
         site.scan()
         self.assertEqual(3, len(site.items))
         self.assertEqual(site.items['a'].path, 'a')
+
+    def test_template_item(self):
+        site = self._make()
+        site.templater = self._make_templater('Global %contents%')
+        site.items['a'].content_provider = lambda *args, **kwargs: 'abc'
+
+        result = site.template_item(site.items['a'])
+        self.assertEqual('Global abc', result)
 
 
 class TestNode(unittest.TestCase):

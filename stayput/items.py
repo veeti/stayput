@@ -19,6 +19,9 @@ class Site(object):
         for item in self.scanner(self):
             self.items[item.path] = item
 
+    def template_item(self, item):
+        return self.templater.template(item)
+
 
 class Node(object):
 
