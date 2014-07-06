@@ -4,7 +4,7 @@ from stayput import scanners
 
 class Site(object):
 
-    def __init__(self, root_path, scanner=scanners.filesystem_scanner):
+    def __init__(self, root_path, scanner=scanners.filesystem_scanner, router=None, templater=None):
         self.root_path = root_path
         self.items_path = path.join(root_path, 'items/')
         self.templates_path = path.join(root_path, 'templates/')
@@ -12,8 +12,8 @@ class Site(object):
 
         self.scanner = scanner
         self.items = {}
-        self.templater = None
-        self.router = None
+        self.templater = templater
+        self.router = router
 
     def scan(self):
         for item in self.scanner(self):
