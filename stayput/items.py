@@ -25,6 +25,9 @@ class Site(object):
             templater = item.templater
         return templater.template(item)
 
+    def route_item(self, item):
+        return self.router(item, site=self)
+
 
 class Node(object):
 

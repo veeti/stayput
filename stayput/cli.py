@@ -28,7 +28,7 @@ def main():
 
     # TODO clean up this mess and move compilation steps elsewhere
     for key, item in site.items.items():
-        route = site.router(item)
+        route = site.route_item(item)
         baseroute = os.path.dirname(route)
         content = site.template_item(item)
         os.makedirs(os.path.join(site.output_path, baseroute), exist_ok=True)

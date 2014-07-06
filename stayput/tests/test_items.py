@@ -46,6 +46,13 @@ class TestSite(unittest.TestCase):
         result = site.template_item(site.items['a'])
         self.assertEqual('Local def', result)
 
+    def test_route_item(self):
+        site = self._make()
+        site.router = lambda item, *args, **kwargs: item.path
+
+        result = site.route_item(site.items['a'])
+        self.assertEqual('a', result)
+
 class TestNode(unittest.TestCase):
 
     def test_no_content_provider_no_contents(self):
