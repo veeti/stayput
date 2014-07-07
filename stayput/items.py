@@ -26,19 +26,24 @@ class Site(object):
         return templater(item)
 
     def route_item(self, item):
-        return self.router(item, site=self)
+        router = self.router
+        if item.router:
+            router = item.router
+        return router(item, site=self)
 
 
 class Node(object):
 
-    def __init__(self, path=None, content_provider=None, templater=None):
+    def __init__(self, path=None, content_provider=None, router=None, templater=None):
         """
         :param path: The path to this node relative to the site
         :param content_provider: A function that when called returns the contents for the node
+        :param router: A local router to be used for this node
         :param templater: A local templater to be used for this node
         """
         self.path = path
         self.content_provider = content_provider
+        self.router = router
         self.templater = templater
         self._cached_contents = None
 
