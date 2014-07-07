@@ -23,7 +23,7 @@ class Site(object):
         templater = self.templater
         if item.templater:
             templater = item.templater
-        return templater.template(item)
+        return templater(item)
 
     def route_item(self, item):
         return self.router(item, site=self)

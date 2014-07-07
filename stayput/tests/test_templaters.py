@@ -28,3 +28,5 @@ class TestSimpleTemplater(unittest.TestCase):
     def test_replaces_content(self):
         self.assertEqual(self.get_templater().template(self.get_item()), "<html>Unit test</html>")
 
+    def test_is_callable(self):
+        self.assertEqual(self.get_templater()(self.get_item()), "<html>Unit test</html>")

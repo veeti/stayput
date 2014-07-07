@@ -3,6 +3,9 @@ class Templater(object):
     def template(self, item):
         raise NotImplementedError
 
+    def __call__(self, item, *args, **kwargs):
+        return self.template(item)
+
 
 class SimpleTemplater(Templater):
     """A simple templater that replaces any occurrence of %contents% in the specified template
