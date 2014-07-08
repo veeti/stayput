@@ -60,6 +60,7 @@ class TestSite(unittest.TestCase):
         result = site.route_item(site.items['a'])
         self.assertEqual('local_route', result)
 
+
 class TestNode(unittest.TestCase):
 
     def test_no_content_provider_no_contents(self):

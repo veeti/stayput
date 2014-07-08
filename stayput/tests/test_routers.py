@@ -3,6 +3,7 @@ import unittest
 from stayput.routers import simple_router
 from stayput.items import Node
 
+
 class TestSimpleRouter(unittest.TestCase):
 
     def _make_item(self, path):

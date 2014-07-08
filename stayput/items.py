@@ -2,6 +2,7 @@ from os import path
 
 from stayput import scanners
 
+
 class Site(object):
 
     def __init__(self, root_path, scanner=scanners.filesystem_scanner, router=None, templater=None):

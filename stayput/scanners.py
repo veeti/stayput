@@ -3,7 +3,8 @@ Scanners are responsible for locating and creating node objects from a data sour
 also implement a method that provides the actual contents for the node.
 """
 
-import os, os.path
+import os
+import os.path
 
 
 def empty_scanner(*args, **kwargs):
