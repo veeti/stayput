@@ -13,8 +13,8 @@ def fake_scanner(*args, **kwargs):
 
 class TestSite(unittest.TestCase):
 
-    def _make(self):
-        site = Site(root_path='', scanner=fake_scanner)
+    def _make(self, root_path='', scanner=fake_scanner, **kwargs):
+        site = Site(root_path, scanner=scanner, **kwargs)
         site.scan()
         return site
 
@@ -31,8 +31,7 @@ class TestSite(unittest.TestCase):
         self.assertEqual(site.items['a'].path, 'a')
 
     def test_template_item(self):
-        site = self._make()
-        site.templater = self._make_templater('Global %contents%')
+        site = self._make(templater=self._make_templater('Global %contents%'))
         site.items['a'].content_provider = lambda *args, **kwargs: 'abc'
 
         result = site.template_item(site.items['a'])
@@ -47,8 +46,7 @@ class TestSite(unittest.TestCase):
         self.assertEqual('Local def', result)
 
     def test_route_item(self):
-        site = self._make()
-        site.router = lambda item, *args, **kwargs: item.path
+        site = self._make(router=lambda item, *args, **kwargs: item.path)
 
         result = site.route_item(site.items['a'])
         self.assertEqual('a', result)
