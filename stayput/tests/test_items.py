@@ -61,8 +61,10 @@ class TestSite(unittest.TestCase):
 
 class TestNode(unittest.TestCase):
 
-    def _make(self, *args, **kwargs):
-        return Node(*args, **kwargs)
+    def _make(self, content=None, content_provider=None, *args, **kwargs):
+        if content:
+            content_provider = lambda *args, **kwargs: content
+        return Node(content_provider=content_provider, *args, **kwargs)
 
     def test_no_content_provider_no_contents(self):
         with self.assertRaises(NotImplementedError):
@@ -108,10 +110,7 @@ class TestNode(unittest.TestCase):
         def filter(content, *args, **kwargs):
             return content.replace('raw', 'filtered')
 
-        def content(*args, **kwargs):
-            return 'raw'
-
-        node = self._make(filters=filter, content_provider=content)
+        node = self._make(filters=filter, content='raw')
         self.assertEqual('filtered', node.contents)
 
     def test_filter_order(self):
@@ -121,10 +120,7 @@ class TestNode(unittest.TestCase):
         def second(content, *args, **kwargs):
             return content.replace('b', 'c')
 
-        def content(*args, **kwargs):
-            return 'a'
-
-        node = self._make(filters=[first, second], content_provider=content)
+        node = self._make(filters=[first, second], content='a')
         self.assertEqual('c', node.contents)
 
     def test_filter_cached(self):
@@ -133,9 +129,6 @@ class TestNode(unittest.TestCase):
             self._counter += 1
             return self._counter
 
-        def content(*args, **kwargs):
-            return 'raw'
-
-        node = self._make(filters=filter, content_provider=content)
+        node = self._make(filters=filter, content='raw')
         self.assertEqual(1, node.contents)
         self.assertEqual(1, node.contents)
