@@ -61,6 +61,9 @@ class TestSite(unittest.TestCase):
 
 class TestNode(unittest.TestCase):
 
+    def _make(self, *args, **kwargs):
+        return Node(*args, **kwargs)
+
     def test_no_content_provider_no_contents(self):
         with self.assertRaises(NotImplementedError):
             test = Node(content_provider=None).contents
@@ -78,5 +81,61 @@ class TestNode(unittest.TestCase):
             return self._counter
 
         node = Node(content_provider=provider)
+        self.assertEqual(1, node.contents)
+        self.assertEqual(1, node.contents)
+
+    def test_filter_single_constructor(self):
+        def filter(*args, **kwargs):
+            pass
+
+        node = self._make(filters=filter)
+        self.assertEqual(1, len(node.filters))
+        self.assertIn(filter, node.filters)
+
+    def test_filter_multiple_constructor(self):
+        def filter(*args, **kwargs):
+            pass
+
+        def filter_two(*args, **kwargs):
+            pass
+
+        node = self._make(filters=[filter, filter_two])
+        self.assertEqual(2, len(node.filters))
+        self.assertIn(filter, node.filters)
+        self.assertIn(filter_two, node.filters)
+
+    def test_filter(self):
+        def filter(content, *args, **kwargs):
+            return content.replace('raw', 'filtered')
+
+        def content(*args, **kwargs):
+            return 'raw'
+
+        node = self._make(filters=filter, content_provider=content)
+        self.assertEqual('filtered', node.contents)
+
+    def test_filter_order(self):
+        def first(content, *args, **kwargs):
+            return content.replace('a', 'b')
+
+        def second(content, *args, **kwargs):
+            return content.replace('b', 'c')
+
+        def content(*args, **kwargs):
+            return 'a'
+
+        node = self._make(filters=[first, second], content_provider=content)
+        self.assertEqual('c', node.contents)
+
+    def test_filter_cached(self):
+        self._counter = 0
+        def filter(*args, **kwargs):
+            self._counter += 1
+            return self._counter
+
+        def content(*args, **kwargs):
+            return 'raw'
+
+        node = self._make(filters=filter, content_provider=content)
         self.assertEqual(1, node.contents)
         self.assertEqual(1, node.contents)

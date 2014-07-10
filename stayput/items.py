@@ -1,3 +1,4 @@
+from collections import Iterable
 from os import path
 
 from stayput import scanners
@@ -35,17 +36,26 @@ class Site(object):
 
 class Node(object):
 
-    def __init__(self, path=None, content_provider=None, router=None, templater=None):
+    def __init__(self, path=None, content_provider=None, router=None, templater=None, filters=None):
         """
         :param path: The path to this node relative to the site
         :param content_provider: A function that when called returns the contents for the node
         :param router: A local router to be used for this node
         :param templater: A local templater to be used for this node
+        :param filters: Nothing, a filter function or an iterable collection of filter functions
         """
         self.path = path
         self.content_provider = content_provider
         self.router = router
         self.templater = templater
+
+        self.filters = []
+        if filters:
+            if isinstance(filters, Iterable):
+                self.filters.extend(filters)
+            else:
+                self.filters.append(filters)
+
         self._cached_contents = None
 
     @property
@@ -55,5 +65,7 @@ class Node(object):
 
         if not self._cached_contents:
             self._cached_contents = self.content_provider()
+            for filter in self.filters:
+                self._cached_contents = filter(content=self._cached_contents)
 
         return self._cached_contents
