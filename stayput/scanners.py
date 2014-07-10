@@ -21,13 +21,7 @@ def create_filesystem_provider(filename, *args, **kwargs):
 
 
 def filesystem_scanner(site, *args, **kwargs):
-    """
-    A scanner that finds items from the file system.
-    :param site: Site object
-    :param args: Arguments
-    :param kwargs: Arguments
-    :return: List of items
-    """
+    """A scanner that finds items from the file system."""
     from stayput.items import Node
     all = []
     for directory, dirnames, filenames in os.walk(site.items_path):
