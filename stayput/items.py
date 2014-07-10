@@ -18,6 +18,7 @@ class Site(object):
         self.router = router
 
     def scan(self):
+        self.items.clear()
         for item in self.scanner(self):
             self.items[item.path] = item
 

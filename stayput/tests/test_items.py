@@ -30,6 +30,17 @@ class TestSite(unittest.TestCase):
         self.assertEqual(3, len(site.items))
         self.assertEqual(site.items['a'].path, 'a')
 
+    def test_scan_items_clear(self):
+        site = self._make()
+        site.scan()
+
+        # rescan with new scanner
+        site.scanner = lambda *args, **kwargs: [Node('d')]
+        site.scan()
+
+        self.assertEqual(1, len(site.items))
+        self.assertIn('d', site.items)
+
     def test_template_item(self):
         site = self._make(templater=self._make_templater('Global %contents%'))
         site.items['a'].content_provider = lambda *args, **kwargs: 'abc'
