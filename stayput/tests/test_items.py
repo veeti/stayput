@@ -69,6 +69,25 @@ class TestSite(unittest.TestCase):
         result = site.route_item(site.items['a'])
         self.assertEqual('local_route', result)
 
+    def test_find_items_starts_with(self):
+        site = self._make(scanner=lambda *args, **kwargs: [Node('a'), Node('aa'), Node('b')])
+
+        results = site.find_items_start_with('a')
+        paths = [node.path for node in results]
+
+        self.assertEqual(2, len(results))
+        self.assertIn('a', paths)
+        self.assertIn('aa', paths)
+
+    def test_find_items_regular_expression(self):
+        site = self._make(scanner=lambda *args, **kwargs: [Node('123'), Node('456'), Node('a2b'), Node('b')])
+
+        results = site.find_items_regex(r'[1-9]+')
+        paths = [node.path for node in results]
+
+        self.assertEqual(2, len(results))
+        self.assertIn('123', paths)
+        self.assertIn('456', paths)
 
 class TestNode(unittest.TestCase):
 

@@ -1,5 +1,6 @@
 from collections import Iterable
 from os import path
+import re
 
 from stayput import scanners
 
@@ -34,6 +35,12 @@ class Site(object):
             router = item.router
         return router(item, site=self)
 
+    def find_items_start_with(self, path):
+        return list(filter(lambda node: node.path.startswith(path), self.items.values()))
+
+    def find_items_regex(self, expression):
+        expression = re.compile(expression)
+        return list(filter(lambda node: expression.match(node.path), self.items.values()))
 
 class Node(object):
 
