@@ -9,7 +9,7 @@ class TestTemplater(unittest.TestCase):
 
     def test_not_implemented(self):
         with self.assertRaises(NotImplementedError):
-            Templater().template(None)
+            Templater().template(None, None)
 
 
 class TestSimpleTemplater(unittest.TestCase):
@@ -26,7 +26,7 @@ class TestSimpleTemplater(unittest.TestCase):
         return templater
 
     def test_replaces_content(self):
-        self.assertEqual(self.get_templater().template(self.get_item()), "<html>Unit test</html>")
+        self.assertEqual(self.get_templater().template(self.get_item(), site=None), "<html>Unit test</html>")
 
     def test_is_callable(self):
-        self.assertEqual(self.get_templater()(self.get_item()), "<html>Unit test</html>")
+        self.assertEqual(self.get_templater()(self.get_item(), site=None), "<html>Unit test</html>")

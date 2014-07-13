@@ -1,10 +1,10 @@
 class Templater(object):
 
-    def template(self, item):
+    def template(self, item, site, *args, **kwargs):
         raise NotImplementedError
 
-    def __call__(self, item, *args, **kwargs):
-        return self.template(item)
+    def __call__(self, item, site, *args, **kwargs):
+        return self.template(item, site)
 
 
 class SimpleTemplater(Templater):
@@ -21,7 +21,7 @@ class SimpleTemplater(Templater):
         """
         self.default_template = template
 
-    def template(self, item):
+    def template(self, item, site, *args, **kwargs):
         """
         Templates the specified item.
         :param item: Item
