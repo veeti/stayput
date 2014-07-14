@@ -1,7 +1,7 @@
 import unittest
-from unittest import mock
 
 from stayput.templaters import Templater, SimpleTemplater
+from stayput.items import Node
 
 
 class TestTemplater(unittest.TestCase):
@@ -16,9 +16,7 @@ class TestSimpleTemplater(unittest.TestCase):
     """Tests the simple built-in templater."""
 
     def get_item(self):
-        item = mock.Mock()
-        item.contents = "Unit test"
-        return item
+        return Node('test', content_provider=lambda *args, **kwargs: "Unit test")
 
     def get_templater(self):
         templater = SimpleTemplater()
