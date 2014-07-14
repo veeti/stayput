@@ -1,8 +1,8 @@
 import os
 import sys
-from importlib import machinery as imp
 
 from stayput import Site
+from stayput.importer import import_file
 
 
 def main():
@@ -17,10 +17,9 @@ def main():
     site = Site(root_path=cwd)
     site.scan()
 
-    # do terrible things
+    # Configure the site
     try:
-        loader = imp.SourceFileLoader('stayput', os.path.join(cwd, 'stayput.py'))
-        config = loader.load_module()
+        config = import_file(os.path.join(cwd, 'stayput.py'))
         config.configure(site)
     except Exception as e:
         print(e)
