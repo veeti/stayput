@@ -84,7 +84,7 @@ METADATA_EXPRESSION = re.compile(r"-{3,}\r?\n([\s\S]*)\n-{3,}\r?\n([\s\S]*)")
 
 def parse_metadata(input):
     meta, content = None, input
-    match = METADATA_EXPRESSION.match(input)
+    match = METADATA_EXPRESSION.match(str(input))
     if match:
         meta = match.group(1)
         content = match.group(2)
