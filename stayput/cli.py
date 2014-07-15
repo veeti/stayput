@@ -28,9 +28,11 @@ def main():
     # TODO clean up this mess and move compilation steps elsewhere
     for key, item in site.items.items():
         route = site.route_item(item)
-        baseroute = os.path.dirname(route)
         content = site.template_item(item)
-        os.makedirs(os.path.join(site.output_path, baseroute), exist_ok=True)
-        with open(os.path.join(site.output_path, route), 'w') as f:
+        output = os.path.join(site.output_path, route)
+        output_dir = os.path.dirname(output)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        with open(output, 'w') as f:
             f.write(content)
         print("Compiled %s." % key)
