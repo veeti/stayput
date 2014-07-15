@@ -1,6 +1,6 @@
 import unittest
 
-from stayput.items import Site, Node
+from stayput.items import Site, Node, parse_metadata
 
 
 def fake_scanner(*args, **kwargs):
@@ -162,3 +162,23 @@ class TestNode(unittest.TestCase):
         node = self._make(filters=filter, content='raw')
         self.assertEqual(1, node.contents)
         self.assertEqual(1, node.contents)
+
+
+class TestMetadataParser(unittest.TestCase):
+
+    def test_no_metadata(self):
+        meta, content = parse_metadata("Hello, world.")
+        self.assertEqual("Hello, world.", content)
+
+    def test_metadata(self):
+        content = """---
+{
+hello
+}
+---
+Hello, world."""
+        meta, content = parse_metadata(content)
+        self.assertEqual("""{
+hello
+}""", meta)
+        self.assertEqual("Hello, world.", content)

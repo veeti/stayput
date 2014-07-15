@@ -77,3 +77,15 @@ class Node(object):
                 self._cached_contents = filter(content=self._cached_contents)
 
         return self._cached_contents
+
+
+METADATA_EXPRESSION = re.compile(r"-{3,}\r?\n([\s\S]*)\n-{3,}\r?\n([\s\S]*)")
+
+
+def parse_metadata(input):
+    meta, content = None, input
+    match = METADATA_EXPRESSION.match(input)
+    if match:
+        meta = match.group(1)
+        content = match.group(2)
+    return meta, content
