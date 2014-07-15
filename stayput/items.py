@@ -1,6 +1,7 @@
 from collections import Iterable
 from os import path
 import re
+import json
 
 from stayput import scanners
 
@@ -65,6 +66,7 @@ class Node(object):
                 self.filters.append(filters)
 
         self._cached_contents = None
+        self._cached_metadata = None
 
     @property
     def contents(self):
@@ -72,11 +74,24 @@ class Node(object):
             raise NotImplementedError("This node does not have a content provider.")
 
         if not self._cached_contents:
-            self._cached_contents = self.content_provider()
+            self._cached_metadata, self._cached_contents = parse_metadata(self.content_provider())
+
+            # Parse metadata
+            if self._cached_metadata:
+                self._cached_metadata = json.loads(self._cached_metadata)
+            else:
+                self._cached_metadata = {}
+
             for filter in self.filters:
                 self._cached_contents = filter(content=self._cached_contents)
 
         return self._cached_contents
+
+    @property
+    def metadata(self):
+        if not self._cached_metadata:
+            self.contents
+        return self._cached_metadata
 
 
 METADATA_EXPRESSION = re.compile(r"-{3,}\r?\n([\s\S]*)\n-{3,}\r?\n([\s\S]*)")

@@ -163,6 +163,25 @@ class TestNode(unittest.TestCase):
         self.assertEqual(1, node.contents)
         self.assertEqual(1, node.contents)
 
+    def test_empty_metadata_by_default(self):
+        node = self._make(content='test')
+        self.assertIsNotNone(node.metadata)
+        self.assertEqual(0, len(node.metadata))
+
+    def test_metadata_parsed_as_json(self):
+        node = self._make(content="""---
+{
+"test": 123
+}
+---
+Test.""")
+        self.assertEqual(123, node.metadata['test'])
+        self.assertEqual('Test.', node.contents)
+
+    def test_no_content_no_metadata(self):
+        with self.assertRaises(NotImplementedError):
+            test = self._make(content_provider=None).metadata
+
 
 class TestMetadataParser(unittest.TestCase):
 
