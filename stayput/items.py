@@ -43,6 +43,11 @@ class Site(object):
         expression = re.compile(expression)
         return list(filter(lambda node: expression.match(node.path), self.items.values()))
 
+
+class MetadataValueError(ValueError):
+    pass
+
+
 class Node(object):
 
     def __init__(self, path=None, content_provider=None, router=None, templater=None, filters=None):
@@ -78,7 +83,10 @@ class Node(object):
 
             # Parse metadata
             if self._cached_metadata:
-                self._cached_metadata = json.loads(self._cached_metadata)
+                try:
+                    self._cached_metadata = json.loads(self._cached_metadata)
+                except ValueError as e:
+                    raise MetadataValueError(e)
             else:
                 self._cached_metadata = {}
 

@@ -1,6 +1,6 @@
 import unittest
 
-from stayput.items import Site, Node, parse_metadata
+from stayput.items import Site, Node, parse_metadata, MetadataValueError
 
 
 def fake_scanner(*args, **kwargs):
@@ -177,6 +177,13 @@ class TestNode(unittest.TestCase):
 Test.""")
         self.assertEqual(123, node.metadata['test'])
         self.assertEqual('Test.', node.contents)
+
+    def test_metadata_invalid_json(self):
+        with self.assertRaises(MetadataValueError):
+            meta = self._make(content="""---
+abc
+---
+test""").metadata
 
     def test_no_content_no_metadata(self):
         with self.assertRaises(NotImplementedError):
