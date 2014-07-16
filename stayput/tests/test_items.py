@@ -191,6 +191,10 @@ class TestNode(unittest.TestCase):
         with self.assertRaises(MetadataValueError):
             meta = self._make(content=TEST_CONTENT_INVALID_METADATA).metadata
 
+    def test_disable_metadata(self):
+        node = self._make(content=TEST_CONTENT_VALID_METADATA, has_metadata=False)
+        self.assertEqual(0, len(node.metadata))
+
     def test_no_content_no_metadata(self):
         with self.assertRaises(NotImplementedError):
             test = self._make(content_provider=None).metadata

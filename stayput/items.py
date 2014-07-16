@@ -50,7 +50,8 @@ class MetadataValueError(ValueError):
 
 class Node(object):
 
-    def __init__(self, path=None, content_provider=None, router=None, templater=None, filters=None):
+    def __init__(self, path=None, content_provider=None, router=None, templater=None, filters=None,
+                 has_metadata=True):
         """
         :param path: The path to this node relative to the site
         :param content_provider: A function that when called returns the contents for the node
@@ -62,6 +63,7 @@ class Node(object):
         self.content_provider = content_provider
         self.router = router
         self.templater = templater
+        self.has_metadata = has_metadata
 
         self.filters = []
         if filters:
@@ -82,7 +84,7 @@ class Node(object):
             self._cached_metadata, self._cached_contents = parse_metadata(self.content_provider())
 
             # Parse metadata
-            if self._cached_metadata:
+            if self._cached_metadata and self.has_metadata:
                 try:
                     self._cached_metadata = json.loads(self._cached_metadata)
                 except ValueError as e:
