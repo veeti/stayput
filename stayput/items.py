@@ -88,7 +88,9 @@ class Node(object):
                 try:
                     self._cached_metadata = json.loads(self._cached_metadata)
                 except ValueError as e:
-                    raise MetadataValueError(e)
+                    raise MetadataValueError("This node includes a metadata block, but it is not "
+                                             "valid JSON. To disable metadata parsing on a node, set "
+                                             "has_metadata to false. The parse error is: %s" % e)
             else:
                 self._cached_metadata = {}
 
