@@ -89,6 +89,20 @@ class TestSite(unittest.TestCase):
         self.assertIn('123', paths)
         self.assertIn('456', paths)
 
+
+TEST_CONTENT_VALID_METADATA = """---
+{
+  "test": 123
+}
+---
+test"""
+
+TEST_CONTENT_INVALID_METADATA = """---
+not json
+---
+test"""
+
+
 class TestNode(unittest.TestCase):
 
     def _make(self, content=None, content_provider=None, *args, **kwargs):
@@ -169,21 +183,13 @@ class TestNode(unittest.TestCase):
         self.assertEqual(0, len(node.metadata))
 
     def test_metadata_parsed_as_json(self):
-        node = self._make(content="""---
-{
-"test": 123
-}
----
-Test.""")
+        node = self._make(content=TEST_CONTENT_VALID_METADATA)
         self.assertEqual(123, node.metadata['test'])
-        self.assertEqual('Test.', node.contents)
+        self.assertEqual('test', node.contents)
 
     def test_metadata_invalid_json(self):
         with self.assertRaises(MetadataValueError):
-            meta = self._make(content="""---
-abc
----
-test""").metadata
+            meta = self._make(content=TEST_CONTENT_INVALID_METADATA).metadata
 
     def test_no_content_no_metadata(self):
         with self.assertRaises(NotImplementedError):
