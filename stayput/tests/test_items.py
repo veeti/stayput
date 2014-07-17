@@ -19,10 +19,7 @@ class TestSite(unittest.TestCase):
         return site
 
     def _make_templater(self, template='Test %contents%'):
-        from stayput.templaters import SimpleTemplater
-        templater = SimpleTemplater()
-        templater.default_template = template
-        return templater
+        return lambda item, *args, **kwargs: template.replace('%contents%', item.contents)
 
     def test_scan_items(self):
         site = self._make()
