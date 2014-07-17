@@ -20,7 +20,7 @@ class TestSimpleTemplater(unittest.TestCase):
 
     def get_templater(self):
         templater = SimpleTemplater()
-        templater.set_default_template("<html>%contents%</html>")
+        templater.default_template = "<html>%contents%</html>"
         return templater
 
     def test_replaces_content(self):

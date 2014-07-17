@@ -9,5 +9,5 @@ def configure(site):
     # Set default template.
     site.templater = SimpleTemplater()
     with open(path.join(site.root_path, 'templates', 'default.html')) as f:
-        site.templater.set_default_template(f.read())
+        site.templater.default_template = f.read()
 

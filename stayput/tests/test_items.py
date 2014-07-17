@@ -21,7 +21,7 @@ class TestSite(unittest.TestCase):
     def _make_templater(self, template='Test %contents%'):
         from stayput.templaters import SimpleTemplater
         templater = SimpleTemplater()
-        templater.set_default_template(template)
+        templater.default_template = template
         return templater
 
     def test_scan_items(self):
