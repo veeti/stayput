@@ -1,6 +1,7 @@
 import unittest
 
-from stayput.items import Site, Node, parse_metadata, MetadataValueError
+from stayput.items import Site, Node, parse_metadata
+from stayput.errors import MetadataValueError
 
 
 def fake_scanner(*args, **kwargs):

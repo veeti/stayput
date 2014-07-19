@@ -4,6 +4,7 @@ import re
 import json
 
 from stayput import scanners
+from stayput.errors import MetadataValueError
 
 
 class Site(object):
@@ -42,10 +43,6 @@ class Site(object):
     def find_items_regex(self, expression):
         expression = re.compile(expression)
         return list(filter(lambda node: expression.match(node.path), self.items.values()))
-
-
-class MetadataValueError(ValueError):
-    pass
 
 
 class Node(object):
