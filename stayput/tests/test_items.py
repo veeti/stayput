@@ -48,6 +48,7 @@ class TestSite(unittest.TestCase):
 
     def test_template_item_local_templater(self):
         site = self._make()
+        site.templater = self._make_templater('Global %contents%')
         site.items['a'].templater = self._make_templater('Local %contents%')
         site.items['a'].content_provider = lambda *args, **kwargs: 'def'
 
@@ -67,6 +68,7 @@ class TestSite(unittest.TestCase):
 
     def test_route_item_local_router(self):
         site = self._make()
+        site.router = lambda *args, **kwargs: 'global_route'
         site.items['a'].router = lambda *args, **kwargs: 'local_route'
 
         result = site.route_item(site.items['a'])
