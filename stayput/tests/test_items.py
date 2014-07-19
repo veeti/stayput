@@ -1,7 +1,7 @@
 import unittest
 
 from stayput.items import Site, Node, parse_metadata
-from stayput.errors import MetadataValueError
+from stayput.errors import MetadataValueError, NoTemplaterError, NoRouterError
 
 
 def fake_scanner(*args, **kwargs):
@@ -54,6 +54,11 @@ class TestSite(unittest.TestCase):
         result = site.template_item(site.items['a'])
         self.assertEqual('Local def', result)
 
+    def test_template_item_no_templater(self):
+        site = self._make()
+        with self.assertRaises(NoTemplaterError):
+            site.template_item(site.items['a'])
+
     def test_route_item(self):
         site = self._make(router=lambda item, *args, **kwargs: item.path)
 
@@ -66,6 +71,11 @@ class TestSite(unittest.TestCase):
 
         result = site.route_item(site.items['a'])
         self.assertEqual('local_route', result)
+
+    def test_route_item_no_router(self):
+        site = self._make()
+        with self.assertRaises(NoRouterError):
+            site.route_item(site.items['a'])
 
     def test_find_items_starts_with(self):
         site = self._make(scanner=lambda *args, **kwargs: [Node('a'), Node('aa'), Node('b')])

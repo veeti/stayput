@@ -4,7 +4,7 @@ import re
 import json
 
 from stayput import scanners
-from stayput.errors import MetadataValueError
+from stayput.errors import MetadataValueError, NoTemplaterError, NoRouterError
 
 
 class Site(object):
@@ -29,12 +29,20 @@ class Site(object):
         templater = self.templater
         if item.templater:
             templater = item.templater
+
+        if not templater:
+            raise NoTemplaterError("No templater found for item %s" % item.path)
+
         return templater(item, site=self)
 
     def route_item(self, item):
         router = self.router
         if item.router:
             router = item.router
+
+        if not router:
+            raise NoRouterError("No router found for item %s" % item.path)
+
         return router(item, site=self)
 
     def find_items_start_with(self, path):
