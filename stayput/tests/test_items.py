@@ -1,7 +1,6 @@
-import unittest
-
 from stayput.items import Site, Node, parse_metadata
 from stayput.errors import MetadataValueError, NoTemplaterError, NoRouterError
+from stayput.tests import TestCase
 
 
 def fake_scanner(*args, **kwargs):
@@ -12,24 +11,16 @@ def fake_scanner(*args, **kwargs):
     ]
 
 
-class TestSite(unittest.TestCase):
-
-    def _make(self, root_path='', scanner=fake_scanner, **kwargs):
-        site = Site(root_path, scanner=scanner, **kwargs)
-        site.scan()
-        return site
-
-    def _make_templater(self, template='Test %contents%'):
-        return lambda item, *args, **kwargs: template.replace('%contents%', item.contents)
+class TestSite(TestCase):
 
     def test_scan_items(self):
-        site = self._make()
+        site = self.make_site(scanner=fake_scanner)
         site.scan()
         self.assertEqual(3, len(site.items))
         self.assertEqual(site.items['a'].path, 'a')
 
     def test_scan_items_clear(self):
-        site = self._make()
+        site = self.make_site(scanner=fake_scanner)
         site.scan()
 
         # rescan with new scanner
@@ -40,47 +31,50 @@ class TestSite(unittest.TestCase):
         self.assertIn('d', site.items)
 
     def test_template_item(self):
-        site = self._make(templater=self._make_templater('Global %contents%'))
-        site.items['a'].content_provider = lambda *args, **kwargs: 'abc'
+        site = self.make_site(templater=self.make_templater('Global %contents%'))
+        site.items['a'] = self.make_item('a', content='abc')
 
         result = site.template_item(site.items['a'])
         self.assertEqual('Global abc', result)
 
     def test_template_item_local_templater(self):
-        site = self._make()
-        site.templater = self._make_templater('Global %contents%')
-        site.items['a'].templater = self._make_templater('Local %contents%')
-        site.items['a'].content_provider = lambda *args, **kwargs: 'def'
+        site = self.make_site(templater=self.make_templater('Global %contents%'))
+        site.items['a'] = self.make_item('a', content='abc', templater=self.make_templater('Local %contents%'))
 
         result = site.template_item(site.items['a'])
-        self.assertEqual('Local def', result)
+        self.assertEqual('Local abc', result)
 
     def test_template_item_no_templater(self):
-        site = self._make()
+        site = self.make_site()
+        site.items['a'] = self.make_item('a', content='a')
         with self.assertRaises(NoTemplaterError):
             site.template_item(site.items['a'])
 
     def test_route_item(self):
-        site = self._make(router=lambda item, *args, **kwargs: item.path)
+        site = self.make_site(router=lambda item, *args, **kwargs: item.path)
+        site.items['a'] = self.make_item('a')
 
         result = site.route_item(site.items['a'])
         self.assertEqual('a', result)
 
     def test_route_item_local_router(self):
-        site = self._make()
+        site = self.make_site()
         site.router = lambda *args, **kwargs: 'global_route'
-        site.items['a'].router = lambda *args, **kwargs: 'local_route'
+        site.items['a'] = self.make_item('a', router=lambda *a, **kw: 'local_route')
 
         result = site.route_item(site.items['a'])
         self.assertEqual('local_route', result)
 
     def test_route_item_no_router(self):
-        site = self._make()
+        site = self.make_site()
+        site.items['a'] = self.make_item('a')
+
         with self.assertRaises(NoRouterError):
             site.route_item(site.items['a'])
 
     def test_find_items_starts_with(self):
-        site = self._make(scanner=lambda *args, **kwargs: [Node('a'), Node('aa'), Node('b')])
+        site = self.make_site(scanner=lambda *args, **kwargs: [Node('a'), Node('aa'), Node('b')])
+        site.scan()
 
         results = site.find_items_start_with('a')
         paths = [node.path for node in results]
@@ -90,7 +84,8 @@ class TestSite(unittest.TestCase):
         self.assertIn('aa', paths)
 
     def test_find_items_regular_expression(self):
-        site = self._make(scanner=lambda *args, **kwargs: [Node('123'), Node('456'), Node('a2b'), Node('b')])
+        site = self.make_site(scanner=lambda *args, **kwargs: [Node('123'), Node('456'), Node('a2b'), Node('b')])
+        site.scan()
 
         results = site.find_items_regex(r'[1-9]+')
         paths = [node.path for node in results]
@@ -113,12 +108,7 @@ not json
 test"""
 
 
-class TestNode(unittest.TestCase):
-
-    def _make(self, content=None, content_provider=None, *args, **kwargs):
-        if content:
-            content_provider = lambda *args, **kwargs: content
-        return Node(content_provider=content_provider, *args, **kwargs)
+class TestNode(TestCase):
 
     def test_no_content_provider_no_contents(self):
         with self.assertRaises(NotImplementedError):
@@ -144,7 +134,7 @@ class TestNode(unittest.TestCase):
         def filter(*args, **kwargs):
             pass
 
-        node = self._make(filters=filter)
+        node = self.make_item(filters=filter)
         self.assertEqual(1, len(node.filters))
         self.assertIn(filter, node.filters)
 
@@ -155,7 +145,7 @@ class TestNode(unittest.TestCase):
         def filter_two(*args, **kwargs):
             pass
 
-        node = self._make(filters=[filter, filter_two])
+        node = self.make_item(filters=[filter, filter_two])
         self.assertEqual(2, len(node.filters))
         self.assertIn(filter, node.filters)
         self.assertIn(filter_two, node.filters)
@@ -164,7 +154,7 @@ class TestNode(unittest.TestCase):
         def filter(content, *args, **kwargs):
             return content.replace('raw', 'filtered')
 
-        node = self._make(filters=filter, content='raw')
+        node = self.make_item(filters=filter, content='raw')
         self.assertEqual('filtered', node.contents)
 
     def test_filter_order(self):
@@ -174,7 +164,7 @@ class TestNode(unittest.TestCase):
         def second(content, *args, **kwargs):
             return content.replace('b', 'c')
 
-        node = self._make(filters=[first, second], content='a')
+        node = self.make_item(filters=[first, second], content='a')
         self.assertEqual('c', node.contents)
 
     def test_filter_cached(self):
@@ -183,34 +173,34 @@ class TestNode(unittest.TestCase):
             self._counter += 1
             return self._counter
 
-        node = self._make(filters=filter, content='raw')
+        node = self.make_item(filters=filter, content='raw')
         self.assertEqual(1, node.contents)
         self.assertEqual(1, node.contents)
 
     def test_empty_metadata_by_default(self):
-        node = self._make(content='test')
+        node = self.make_item(content='test')
         self.assertIsNotNone(node.metadata)
         self.assertEqual(0, len(node.metadata))
 
     def test_metadata_parsed_as_json(self):
-        node = self._make(content=TEST_CONTENT_VALID_METADATA)
+        node = self.make_item(content=TEST_CONTENT_VALID_METADATA)
         self.assertEqual(123, node.metadata['test'])
         self.assertEqual('test', node.contents)
 
     def test_metadata_invalid_json(self):
         with self.assertRaises(MetadataValueError):
-            meta = self._make(content=TEST_CONTENT_INVALID_METADATA).metadata
+            meta = self.make_item(content=TEST_CONTENT_INVALID_METADATA).metadata
 
     def test_disable_metadata(self):
-        node = self._make(content=TEST_CONTENT_VALID_METADATA, has_metadata=False)
+        node = self.make_item(content=TEST_CONTENT_VALID_METADATA, has_metadata=False)
         self.assertEqual(0, len(node.metadata))
 
     def test_no_content_no_metadata(self):
         with self.assertRaises(NotImplementedError):
-            test = self._make(content_provider=None).metadata
+            test = self.make_item(content_provider=None).metadata
 
 
-class TestMetadataParser(unittest.TestCase):
+class TestMetadataParser(TestCase):
 
     def test_no_metadata(self):
         meta, content = parse_metadata("Hello, world.")

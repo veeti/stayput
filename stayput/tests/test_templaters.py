@@ -1,10 +1,9 @@
-import unittest
-
 from stayput.templaters import Templater, SimpleTemplater
 from stayput.items import Node
+from stayput.tests import TestCase
 
 
-class TestTemplater(unittest.TestCase):
+class TestTemplater(TestCase):
     """Test the base class for a templater."""
 
     def test_not_implemented(self):
@@ -12,11 +11,11 @@ class TestTemplater(unittest.TestCase):
             Templater().template(None, None)
 
 
-class TestSimpleTemplater(unittest.TestCase):
+class TestSimpleTemplater(TestCase):
     """Tests the simple built-in templater."""
 
     def get_item(self):
-        return Node('test', content_provider=lambda *args, **kwargs: "Unit test")
+        return self.make_item('test', content="Unit test")
 
     def get_templater(self):
         templater = SimpleTemplater()
