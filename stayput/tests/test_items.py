@@ -44,6 +44,13 @@ class TestSite(TestCase):
         result = site.template_item(site.items['a'])
         self.assertEqual('Local abc', result)
 
+    def test_template_item_local_templater_no_global(self):
+        site = self.make_site(templater=None)
+        site.items['a'] = self.make_item('a', content='abc', templater=self.make_templater('Local %contents%'))
+
+        result = site.template_item(site.items['a'])
+        self.assertEqual('Local abc', result)
+
     def test_template_item_no_templater(self):
         site = self.make_site()
         site.items['a'] = self.make_item('a', content='a')
@@ -60,6 +67,13 @@ class TestSite(TestCase):
     def test_route_item_local_router(self):
         site = self.make_site()
         site.router = lambda *args, **kwargs: 'global_route'
+        site.items['a'] = self.make_item('a', router=lambda *a, **kw: 'local_route')
+
+        result = site.route_item(site.items['a'])
+        self.assertEqual('local_route', result)
+
+    def test_route_item_local_router_no_global(self):
+        site = self.make_site(router=None)
         site.items['a'] = self.make_item('a', router=lambda *a, **kw: 'local_route')
 
         result = site.route_item(site.items['a'])
