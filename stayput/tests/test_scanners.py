@@ -1,11 +1,11 @@
-import unittest
 import tempfile
 import os
 
 from stayput.scanners import create_filesystem_provider
+from stayput.tests import TestCase
 
 
-class TestFilesystemContentProvider(unittest.TestCase):
+class TestFilesystemContentProvider(TestCase):
 
     def setUp(self):
         self.file = tempfile.mktemp('stayput')

@@ -1,12 +1,12 @@
-import unittest
 from os import path
 
 from stayput.importer import import_file
+from stayput.tests import TestCase
 
 FIXTURE = path.abspath(path.join(path.dirname(__file__), 'fixtures', 'import_test.py'))
 
 
-class TestImporter(unittest.TestCase):
+class TestImporter(TestCase):
 
     # see fixtures/import_test.py.
     def test_import(self):
