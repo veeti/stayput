@@ -1,12 +1,8 @@
 from stayput.routers import simple_router
-from stayput.items import Node
 from stayput.tests import TestCase
 
 
 class TestSimpleRouter(TestCase):
-
-    def make_item(self, path):
-        return Node(path)
 
     def test_index_is_index(self):
         self.assertEqual('index.html', simple_router(self.make_item('index.html')))
