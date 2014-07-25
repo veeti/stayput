@@ -25,14 +25,20 @@ def main():
         print(e)
         sys.exit(1)
 
-    # TODO clean up this mess and move compilation steps elsewhere
+    # Compile each item
     for key, item in site.items.items():
+        # Generare route and output
         route = site.route_item(item)
-        content = site.template_item(item)
-        output = os.path.join(site.output_path, route)
-        output_dir = os.path.dirname(output)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        with open(output, 'w') as f:
-            f.write(content)
-        print("Compiled %s." % key)
+        output = site.template_item(item)
+
+        # Create output paths
+        file = os.path.join(site.output_path, route)
+        directory = os.path.dirname(file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # Write
+        with (open(file, 'w')) as f:
+            f.write(output)
+
+        print("\x1b[1mOK\x1b[0m %s" % key)
