@@ -46,11 +46,11 @@ class Site(object):
         return router(item, site=self)
 
     def find_items_start_with(self, path):
-        return list(filter(lambda node: node.path.startswith(path), self.items.values()))
+        return [item for item in self.items.values() if item.path.startswith(path)]
 
     def find_items_regex(self, expression):
         expression = re.compile(expression)
-        return list(filter(lambda node: expression.match(node.path), self.items.values()))
+        return [item for item in self.items.values() if expression.match(item.path)]
 
 
 class Node(object):
