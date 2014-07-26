@@ -56,7 +56,7 @@ class Site(object):
 class Node(object):
 
     def __init__(self, path=None, content_provider=None, router=None, templater=None, filters=None,
-                 has_metadata=True):
+                 fingerprint=None, has_metadata=True):
         """
         :param path: The path to this node relative to the site
         :param content_provider: A function that when called returns the contents for the node
@@ -68,6 +68,7 @@ class Node(object):
         self.content_provider = content_provider
         self.router = router
         self.templater = templater
+        self.fingerprint = fingerprint
         self.has_metadata = has_metadata
 
         self.filters = []
