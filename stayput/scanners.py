@@ -29,5 +29,6 @@ def filesystem_scanner(site, *args, **kwargs):
             full = os.path.join(directory, filename)
             relative = os.path.relpath(full, site.items_path)
             normalized = relative.replace(os.path.pathsep, '/')
-            all.append(Node(normalized, content_provider=create_filesystem_provider(full)))
+            all.append(Node(normalized, content_provider=create_filesystem_provider(full),
+                            fingerprint=int(os.path.getmtime(full))))
     return all
