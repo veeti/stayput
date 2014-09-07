@@ -1,7 +1,8 @@
 import os
 import sys
+import json
 
-from stayput import Site
+from stayput import Site, Builder
 from stayput.importer import import_file
 
 
@@ -25,20 +26,34 @@ def main():
         print(e)
         sys.exit(1)
 
-    # Compile each item
-    for key, item in site.items.items():
-        # Generare route and output
-        route = site.route_item(item)
-        output = site.template_item(item)
+    builder = Builder(site)
 
-        # Create output paths
-        file = os.path.join(site.output_path, route)
-        directory = os.path.dirname(file)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+    # Load cached manifest for incremental build
+    manifest = None
+    manifest_path = os.path.join(site.cache_path, 'manifest.json')
+    try:
+        if os.path.exists(manifest_path):
+            with open(manifest_path, 'r') as f:
+                manifest = json.loads(f.read())
+    except ValueError:
+        pass
 
-        # Write
-        with (open(file, 'w')) as f:
-            f.write(output)
+    # Parse manifest
+    if manifest:
+        builder.load_manifest(manifest)
 
+    builder.scan()
+
+    # Build each item
+    for key in builder.dirty:
+        builder.build(key)
         print("\x1b[1mOK\x1b[0m %s" % key)
+
+    print("Done. Built \x1b[1m%d\x1b[0m items. \x1b[1m%d\x1b[0m up to date." % (len(builder.dirty),
+        len(site.items) - len(builder.dirty)))
+
+    # Write manifest
+    if not os.path.exists(site.cache_path):
+        os.makedirs(site.cache_path)
+    with open(manifest_path, 'w') as f:
+        f.write(json.dumps(builder.build_manifest()))

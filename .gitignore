@@ -11,3 +11,4 @@ __pycache__
 
 # Example output
 example/output/
+example/cache/

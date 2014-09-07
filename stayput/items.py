@@ -13,6 +13,7 @@ class Site(object):
         self.root_path = root_path
         self.items_path = path.join(root_path, 'items/')
         self.templates_path = path.join(root_path, 'templates/')
+        self.cache_path = path.join(root_path, 'cache/')
         self.output_path = path.join(root_path, 'output/')
 
         self.scanner = scanner
