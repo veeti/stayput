@@ -8,8 +8,8 @@ import os.path
 
 
 def empty_scanner(*args, **kwargs):
-    """A stub scanner that returns zero items."""
-    return []
+    """An empty stub scanner."""
+    pass
 
 
 def create_filesystem_provider(filename, *args, **kwargs):
@@ -19,16 +19,26 @@ def create_filesystem_provider(filename, *args, **kwargs):
             return f.read()
     return provide
 
-
 def filesystem_scanner(site, *args, **kwargs):
     """A scanner that finds items from the file system."""
     from stayput.items import Node
     all = []
-    for directory, dirnames, filenames in os.walk(site.items_path):
-        for filename in filenames:
-            full = os.path.join(directory, filename)
-            relative = os.path.relpath(full, site.items_path)
-            normalized = relative.replace(os.path.pathsep, '/')
-            all.append(Node(normalized, content_provider=create_filesystem_provider(full),
-                            fingerprint=int(os.path.getmtime(full))))
-    return all
+
+    def walk_path(path):
+        all = []
+        for directory, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                full = os.path.join(directory, filename)
+                relative = os.path.relpath(full, path)
+                normalized = relative.replace(os.path.pathsep, '/')
+
+                fingerprint = int(os.path.getmtime(full))
+
+                all.append((full, normalized, fingerprint))
+        return all
+
+    for path, key, fingerprint in walk_path(site.items_path):
+        site.items[key] = Node(key, content_provider=create_filesystem_provider(path), fingerprint=fingerprint)
+
+    for path, key, fingerprint in walk_path(site.templates_path):
+        site.templates[key] = Node(key, fingerprint=fingerprint)

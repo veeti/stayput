@@ -18,13 +18,14 @@ class Site(object):
 
         self.scanner = scanner
         self.items = {}
+        self.templates = {}
         self.templater = templater
         self.router = router
 
     def scan(self):
         self.items.clear()
-        for item in self.scanner(self):
-            self.items[item.path] = item
+        self.templates.clear()
+        self.scanner(self)
 
     def template_item(self, item):
         templater = self.templater

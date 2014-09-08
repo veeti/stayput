@@ -3,12 +3,10 @@ from stayput.errors import MetadataValueError, NoTemplaterError, NoRouterError
 from stayput.tests import TestCase
 
 
-def fake_scanner(*args, **kwargs):
-    return [
-        Node('a'),
-        Node('b'),
-        Node('c')
-    ]
+def fake_scanner(site, *args, **kwargs):
+    site.items['a'] = Node('a')
+    site.items['b'] = Node('b')
+    site.items['c'] = Node('c')
 
 
 class TestSite(TestCase):
@@ -24,7 +22,9 @@ class TestSite(TestCase):
         site.scan()
 
         # rescan with new scanner
-        site.scanner = lambda *args, **kwargs: [Node('d')]
+        def new_scanner(site, *args, **kwargs):
+            site.items['d'] = self.make_item('d')
+        site.scanner = new_scanner
         site.scan()
 
         self.assertEqual(1, len(site.items))
@@ -87,8 +87,9 @@ class TestSite(TestCase):
             site.route_item(site.items['a'])
 
     def test_find_items_starts_with(self):
-        site = self.make_site(scanner=lambda *args, **kwargs: [Node('a'), Node('aa'), Node('b')])
-        site.scan()
+        site = self.make_site()
+        for key in ('a', 'aa', 'b'):
+            site.items[key] = self.make_item(key)
 
         results = site.find_items_start_with('a')
         paths = [node.path for node in results]
@@ -98,8 +99,9 @@ class TestSite(TestCase):
         self.assertIn('aa', paths)
 
     def test_find_items_regular_expression(self):
-        site = self.make_site(scanner=lambda *args, **kwargs: [Node('123'), Node('456'), Node('a2b'), Node('b')])
-        site.scan()
+        site = self.make_site()
+        for key in ('123', '456', 'a2b', 'b'):
+            site.items[key] = self.make_item(key)
 
         results = site.find_items_regex(r'[1-9]+')
         paths = [node.path for node in results]

@@ -2,7 +2,9 @@ import os
 import sys
 import json
 
-from stayput import Site, Builder
+from stayput import Site
+from stayput.build import load_manifest, save_manifest, build_item
+from stayput.incremental import build_manifest, scan_work
 from stayput.importer import import_file
 
 
@@ -26,34 +28,25 @@ def main():
         print(e)
         sys.exit(1)
 
-    builder = Builder(site)
+    # Load cached manifest and build current for incremental build
+    cached_manifest = load_manifest(site)
+    manifest = build_manifest(site)
+    print(cached_manifest)
+    print(manifest)
 
-    # Load cached manifest for incremental build
-    manifest = None
-    manifest_path = os.path.join(site.cache_path, 'manifest.json')
-    try:
-        if os.path.exists(manifest_path):
-            with open(manifest_path, 'r') as f:
-                manifest = json.loads(f.read())
-    except ValueError:
-        pass
+    # Scan for incremental build
+    work = scan_work(site, cached_manifest, manifest)
 
-    # Parse manifest
-    if manifest:
-        builder.load_manifest(manifest)
+    # Calculate nice numbers
+    todo = len(work.dirty)
+    clean = len(site.items) - todo
 
-    builder.scan()
-
-    # Build each item
-    for key in builder.dirty:
-        builder.build(key)
+    # Build dirty items
+    for key in work.dirty:
+        build_item(site, site.items[key])
         print("\x1b[1mOK\x1b[0m %s" % key)
 
-    print("Done. Built \x1b[1m%d\x1b[0m items. \x1b[1m%d\x1b[0m up to date." % (len(builder.dirty),
-        len(site.items) - len(builder.dirty)))
+    print("Built \x1b[1m%d\x1b[0m items. \x1b[1m%d\x1b[0m up to date. \x1b[1m%d\x1b[0m total." % (todo, clean, todo + clean))
 
     # Write manifest
-    if not os.path.exists(site.cache_path):
-        os.makedirs(site.cache_path)
-    with open(manifest_path, 'w') as f:
-        f.write(json.dumps(builder.build_manifest()))
+    save_manifest(site, manifest)
